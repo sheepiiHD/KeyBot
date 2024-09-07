@@ -14,7 +14,7 @@ export const data = new SlashCommandBuilder()
 export const execute = async (client: Client, commandName: string, interaction: CommandInteraction | any) => {
     const key = await assignKey(interaction.user.id);
 
-    if (!ADMIN_ID.includes(interaction.author.id)) {
+    if (!ADMIN_ID.includes(interaction.user.id)) {
         await interaction.reply('You do not have permission to use this command.');
         return;
     }

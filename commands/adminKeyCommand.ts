@@ -13,7 +13,7 @@ export const data = new SlashCommandBuilder()
     .toJSON()
 
 export const execute = async (client: Client, commandName: string, interaction: CommandInteraction | any) => {
-    if (!ADMIN_ID.includes(interaction.author.id)) {
+    if (!ADMIN_ID.includes(interaction.user.id)) {
         await interaction.reply('You do not have permission to use this command.');
         return;
     }
