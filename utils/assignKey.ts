@@ -10,7 +10,7 @@ export async function assignKey(discordId: string): Promise<string | null> {
     }
 
     const keyDoc = await Key.findOne({ assignedTo: null }) as IKey | null;
-    if (!keyDoc) return null; // Return null if no unassigned keys are available
+    if (!keyDoc) return null;
 
     keyDoc.assignedTo = discordId;
     await keyDoc.save();

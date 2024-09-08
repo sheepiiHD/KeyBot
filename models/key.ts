@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema, Model  } from 'mongoose';
+import mongoose, {Document, Model, Schema} from 'mongoose';
 
 export interface IKey extends Document {
     key: string;
@@ -12,8 +12,7 @@ const KeySchema: Schema<IKey> = new Schema({
 
 KeySchema.statics.createBulk = async function (keys: Array<{ key: string; assignedTo?: string | null }>) {
     try {
-        const result = await this.insertMany(keys, { ordered: false }); // Set ordered: false to continue inserting if one fails
-        return result;
+        return await this.insertMany(keys, {ordered: false});
     } catch (error) {
         console.error('Error during bulk creation:', error);
         throw error;

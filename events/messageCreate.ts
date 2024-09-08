@@ -1,30 +1,32 @@
-import { Client, Message } from "discord.js";
+import {Attachment, Client, Message} from 'discord.js';
 import fetch from 'node-fetch';
-import {Key} from "../models/key";
-import {ADMIN_ID} from "../bot";
+import { Key } from '../models/key';
+import { ADMIN_ID } from '../bot';
 
 export default (client: Client) => {
     client.on('messageCreate', async (message: Message) => {
-        if (!message.inGuild()) {
-            if (message.attachments.size === 1) {
-                const attachment = message.attachments.first();
-                if(ADMIN_ID.includes(message.author.id)) {
-                    if (attachment && attachment.name?.endsWith('.txt')) {
-                        try {
+        if (!message.inGuild() && message.attachments.size === 1) {
+            const attachment = message.attachments.first() as Attachment;
 
-                            const response = await fetch(attachment.url);
-                            const text = await response.text();
-                            const lines = text.split('\n');
-                            const input = lines.map((line) => ({key: line.trim(), assignedTo: null}));
+            if (ADMIN_ID.includes(message.author.id) && attachment?.name?.endsWith('.txt')) {
+                try {
+                    const response = await fetch(attachment.url);
+                    const text = await response.text();
 
-                            await Key.createBulk(input).then(() => message.reply("Done!"));
-                        } catch (error) {
-                            console.error('Error reading the attachment:', error);
-                        }
-                    } else {
-                        console.log('The attached file is not a .txt file.');
-                    }
+                    const keys = text.split('\n').map(line => ({
+                        key: line.trim(),
+                        assignedTo: null
+                    }));
+
+                    await Key.createBulk(keys);
+
+                    await message.reply('Keys have been successfully uploaded!');
+                } catch (error) {
+                    console.error('Error processing the attachment:', error);
+                    await message.reply('An error occurred while processing the file.');
                 }
+            } else {
+                await message.reply('Please upload a valid .txt file.');
             }
         }
     });
