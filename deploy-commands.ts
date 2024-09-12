@@ -2,6 +2,7 @@ import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import dotenv from 'dotenv';
+import config from "./config";
 
 dotenv.config();
 
@@ -24,7 +25,7 @@ const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN as string
         console.log('Started refreshing application (/) commands.');
 
         await rest.put(
-            Routes.applicationCommands(process.env.CLIENT_ID as string),
+            Routes.applicationCommands(config.CLIENT_ID as string),
             { body: commands },
         );
 

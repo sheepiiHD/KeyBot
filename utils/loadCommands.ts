@@ -3,6 +3,7 @@ import {REST} from '@discordjs/rest';
 import {Routes} from 'discord-api-types/v9';
 import {readdirSync} from 'fs';
 import {Client} from "discord.js";
+import config from "../config";
 
 const commandsDir = path.join(__dirname, '..', 'commands');
 export async function refreshApplicationCommands(client: Client) {
@@ -24,7 +25,7 @@ export async function refreshApplicationCommands(client: Client) {
         commands.push(command.data);
     }
 
-    const rest = new REST({version: '10'}).setToken(process.env.BOT_TOKEN as string);
+    const rest = new REST({version: '10'}).setToken(config.BOT_TOKEN as string);
 
     try {
         await rest.put(

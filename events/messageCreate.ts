@@ -1,7 +1,7 @@
 import {Attachment, Client, Message} from 'discord.js';
 import fetch from 'node-fetch';
 import { Key } from '../models/key';
-import { ADMIN_ID } from '../bot';
+import config from "../config";
 
 export default (client: Client) => {
     client.on('messageCreate', async (message: Message) => {
@@ -13,7 +13,7 @@ export default (client: Client) => {
                 return;
             }
 
-            if (ADMIN_ID.includes(message.author.id) && attachment?.name?.endsWith('.txt')) {
+            if (config.ADMIN_IDs.includes(message.author.id) && attachment?.name?.endsWith('.txt')) {
                 try {
                     const response = await fetch(attachment.url);
                     const text = await response.text();

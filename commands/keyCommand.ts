@@ -13,6 +13,6 @@ export const execute = async (client: Client, commandName: string, interaction: 
     if (key) {
         await interaction.reply({content: `Your key is: \`${key}\``, ephemeral: true});
     } else {
-        await interaction.reply('No available keys.');
+        await interaction.reply({content: 'No available keys.', ephemeral: true});
     }
 }

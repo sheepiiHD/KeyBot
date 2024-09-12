@@ -1,7 +1,7 @@
 import {Client, CommandInteraction} from 'discord.js';
 import {SlashCommandBuilder} from "@discordjs/builders";
-import {ADMIN_ID} from "../bot";
 import {Key} from "../models/key";
+import config from "../config";
 
 
 export const data = new SlashCommandBuilder()
@@ -11,7 +11,7 @@ export const data = new SlashCommandBuilder()
 
 export const execute = async (client: Client, commandName: string, interaction: CommandInteraction | any) => {
 
-    if (!ADMIN_ID.includes(interaction.user.id)) {
+    if (!config.ADMIN_IDs.includes(interaction.user.id)) {
         await interaction.reply('You do not have permission to use this command.');
         return;
     }
