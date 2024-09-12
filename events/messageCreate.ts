@@ -8,6 +8,11 @@ export default (client: Client) => {
         if (!message.inGuild() && message.attachments.size === 1) {
             const attachment = message.attachments.first() as Attachment;
 
+            if(message.content === ""){
+                await message.reply(`You must include a type in your upload, just type something like **'beta'**... `);
+                return;
+            }
+
             if (ADMIN_ID.includes(message.author.id) && attachment?.name?.endsWith('.txt')) {
                 try {
                     const response = await fetch(attachment.url);
@@ -15,7 +20,8 @@ export default (client: Client) => {
 
                     const keys = text.split('\n').map(line => ({
                         key: line.trim(),
-                        assignedTo: null
+                        assignedTo: null,
+                        type: message.content.trim()
                     }));
 
                     await Key.createBulk(keys);

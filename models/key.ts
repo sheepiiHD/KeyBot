@@ -3,14 +3,16 @@ import mongoose, {Document, Model, Schema} from 'mongoose';
 export interface IKey extends Document {
     key: string;
     assignedTo: string | null;
+    type: string;
 }
 
 const KeySchema: Schema<IKey> = new Schema({
     key: { type: String, required: true, unique: true },
+    type: {type: String, default: 'beta' },
     assignedTo: { type: String, default: null },
 });
 
-KeySchema.statics.createBulk = async function (keys: Array<{ key: string; assignedTo?: string | null }>) {
+KeySchema.statics.createBulk = async function (keys: Array<{ key: string; assignedTo?: string | null, type: string }>) {
     try {
         return await this.insertMany(keys, {ordered: false});
     } catch (error) {
@@ -19,4 +21,4 @@ KeySchema.statics.createBulk = async function (keys: Array<{ key: string; assign
     }
 };
 
-export const Key = mongoose.model<IKey, Model<IKey> & { createBulk: (keys: Array<{ key: string; assignedTo?: string | null }>) => Promise<IKey[]> }>('Key', KeySchema);
+export const Key = mongoose.model<IKey, Model<IKey> & { createBulk: (keys: Array<{ key: string; assignedTo?: string | null; type: string }>) => Promise<IKey[]> }>('Key', KeySchema);

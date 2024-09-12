@@ -9,7 +9,7 @@ export const data = new SlashCommandBuilder()
     .toJSON()
 
 export const execute = async (client: Client, commandName: string, interaction: CommandInteraction | any) => {
-    const key = await assignKey(interaction.user.id);
+    const key = await assignKey(interaction.user.id, "beta");
     if (key) {
         await interaction.reply({content: `Your key is: \`${key}\``, ephemeral: true});
     } else {
