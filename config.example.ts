@@ -3,6 +3,7 @@ interface Config {
     CLIENT_ID: string;
     GUILD_ID: string;
     MONGO_URI: string;
+    WEBHOOK_URL: string;
     ADMIN_IDs: string[];
     claims: Claim[]
 }
@@ -17,6 +18,7 @@ export const config: Config = {
     CLIENT_ID: '',
     GUILD_ID: '',
     MONGO_URI: 'mongodb://localhost:27017/discordbot',
+    WEBHOOK_URL: '',
     ADMIN_IDs: ['258018973696655364', ''],
     claims: [
         {name: 'patreon1', discordRoleId: ''},

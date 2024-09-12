@@ -3,6 +3,7 @@ import {assignKey} from '../utils/assignKey';
 import {SlashCommandBuilder} from "@discordjs/builders";
 import {Key} from "../models/key";
 import config from "../config";
+import Logger from "../utils/Logger";
 
 
 export const data = new SlashCommandBuilder()
@@ -31,8 +32,10 @@ export const execute = async (client: Client, commandName: string, interaction: 
     if (typeOption.value === "all" && await Key.findOne({type: 'beta'})) {
         await Key.deleteMany({});
         await interaction.reply({content: `All keys have been removed!`, ephemeral: true});
+        await Logger.warn(`All keys deleted!`);
     } else if (await Key.findOne({type: typeOption.value})) {
         await Key.deleteMany({type: typeOption.value});
+        await Logger.warn(`${typeOption.value} keys deleted!`);
         await interaction.reply({content: `All ${typeOption.value} keys have been removed!`, ephemeral: true});
     } else {
         await interaction.reply({content: `No keys to remove`, ephemeral: true});

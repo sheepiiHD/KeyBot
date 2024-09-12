@@ -2,6 +2,7 @@ import {Attachment, Client, Message} from 'discord.js';
 import fetch from 'node-fetch';
 import { Key } from '../models/key';
 import config from "../config";
+import Logger from "../utils/Logger";
 
 export default (client: Client) => {
     client.on('messageCreate', async (message: Message) => {
@@ -25,6 +26,7 @@ export default (client: Client) => {
                     }));
 
                     await Key.createBulk(keys);
+                    await Logger.info(`Keys created for ${message.content.trim()}.`);
 
                     await message.reply('Keys have been successfully uploaded!');
                 } catch (error) {

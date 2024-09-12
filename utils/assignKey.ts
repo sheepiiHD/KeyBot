@@ -1,5 +1,6 @@
 import { IUser} from "../models/user";
 import {IKey, Key} from "../models/key";
+import Logger from "./Logger";
 
 
 export async function assignKey(discordId: string, type: string): Promise<string | null> {
@@ -11,6 +12,7 @@ export async function assignKey(discordId: string, type: string): Promise<string
     if(!user) {
         keyDoc.assignedTo = discordId;
         await keyDoc.save();
+        await Logger.info(`<@${discordId}> key ${type} claimed`);
     }
 
     return keyDoc.key;
