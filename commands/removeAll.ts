@@ -24,12 +24,12 @@ export const execute = async (client: Client, commandName: string, interaction: 
     }
 
     const typeOption = interaction.options.get('type');
-    if (!typeOption || typeOption.value === null) {
+    if ((!typeOption || typeOption.value === null) && typeOption.value !== "all") {
         await interaction.reply('Please provide a valid amount.');
         return;
     }
 
-    if (typeOption.value === "all" && await Key.findOne({type: 'beta'})) {
+    if (typeOption.value === "all") {
         await Key.deleteMany({});
         await interaction.reply({content: `All keys have been removed!`, ephemeral: true});
         await Logger.warn(`All keys deleted!`);

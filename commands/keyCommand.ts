@@ -1,18 +1,34 @@
-import {Client, CommandInteraction} from 'discord.js';
-import { assignKey } from '../utils/assignKey';
-import {SlashCommandBuilder} from "@discordjs/builders";
-
+import { Client, CommandInteraction, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder } from "@discordjs/builders";
+import {IKey, Key} from "../models/key";
 
 export const data = new SlashCommandBuilder()
-    .setName('key')
-    .setDescription('Get your key!')
-    .toJSON()
+    .setName('keys')
+    .setDescription('Get your keys!')
+    .toJSON();
 
 export const execute = async (client: Client, commandName: string, interaction: CommandInteraction | any) => {
-    const key = await assignKey(interaction.user.id, "beta");
-    if (key) {
-        await interaction.reply({content: `Your key is: \`${key}\``, ephemeral: true});
+    // Fetch all keys assigned to the user
+    const keys = await Key.find({ assignedTo: interaction.user.id });
+
+    if (keys.length > 0) {
+        const embed = new EmbedBuilder()
+            .setTitle('Your Keys')
+            .setColor(0x00AE86)
+            .setDescription('Here are the keys assigned to you:')
+            .addFields(
+                keys.map((key: IKey) => ({
+                    name: key.type || 'Key',
+                    value: `\`${key.key}\``,
+                    inline: true
+                }))
+            )
+            .setFooter({ text: 'Keep your keys safe!' });
+
+        // Reply with the embed
+        await interaction.tryReply({ embeds: [embed], ephemeral: true });
     } else {
-        await interaction.reply({content: 'No available keys.', ephemeral: true});
+        // If no keys are assigned, respond with a message
+        await interaction.tryReply({ content: 'No available keys.', ephemeral: true });
     }
-}
+};

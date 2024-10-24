@@ -10,7 +10,7 @@ interface Config {
 
 interface Claim {
     name: string;
-    discordRoleId: string,
+    discordRoleId: string[],
 }
 
 export const config: Config = {
@@ -18,11 +18,11 @@ export const config: Config = {
     CLIENT_ID: '',
     GUILD_ID: '',
     MONGO_URI: 'mongodb://localhost:27017/discordbot',
+    ADMIN_IDs: ['258018973696655364'],
     WEBHOOK_URL: '',
-    ADMIN_IDs: ['258018973696655364', ''],
     claims: [
-        {name: 'patreon1', discordRoleId: ''},
-        {name: 'patreon2', discordRoleId: ''},
+        {name: 'patreon1', discordRoleId: ['1234', '4321']},
+        {name: 'patreon2', discordRoleId: ['']},
     ]
 };
 

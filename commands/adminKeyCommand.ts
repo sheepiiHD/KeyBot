@@ -10,28 +10,41 @@ export const data = new SlashCommandBuilder()
         option.setName('amount')
             .setRequired(true)
             .setDescription('The amount of keys to retrieve'))
+    .addStringOption(option =>
+        option.setName('type')
+            .setRequired(false)
+            .setDescription('the type of keys you want to retrieve'))
     .toJSON()
 
 export const execute = async (client: Client, commandName: string, interaction: CommandInteraction | any) => {
     if (!config.ADMIN_IDs.includes(interaction.user.id)) {
-        await interaction.reply('You do not have permission to use this command.');
+        await interaction.tryReply('You do not have permission to use this command.');
         return;
     }
 
     const amountOption = interaction.options.get('amount');
     if (!amountOption || amountOption.value === null) {
-        await interaction.reply('Please provide a valid amount.');
+        await interaction.tryReply('Please provide a valid amount.');
         return;
     }
 
     const amount = amountOption.value as number;
 
-    const unassignedKeys = await Key.find({ assignedTo: null }).limit(amount);
-    if (unassignedKeys.length < amount) {
-        await interaction.reply(`Not enough unassigned keys available. Only ${unassignedKeys.length} keys are available.`);
-        return;
+    const typeOption = interaction.options.get('type');
+    let type = '';
+    if (!typeOption || typeOption.value === null) {
+        type = 'beta';
+    }else{
+        type = typeOption.value as string;
     }
 
-    const keys = unassignedKeys.map((keyDoc) => keyDoc.key).join('\n');
-    await interaction.reply({content: `Here are ${amount} keys:\n${keys}`, ephemeral: true});
+    const {keys, updatedCount, message} = await Key.claimBulk(type, interaction.user.id, amount);
+
+
+    if (keys.length === 0) {
+        await interaction.tryReply(`${message}`);
+        return;
+    }else{
+        await interaction.tryReply({content: `${message}\n\n**Keys:**\n${keys.join('\n')}`, ephemeral: true});
+    }
 }

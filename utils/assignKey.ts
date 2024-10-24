@@ -12,7 +12,7 @@ export async function assignKey(discordId: string, type: string): Promise<string
     if(!user) {
         keyDoc.assignedTo = discordId;
         await keyDoc.save();
-        await Logger.info(`<@${discordId}> key ${type} claimed`);
+        await Logger.info(`<@${discordId}> claimed a **${type}** key.`);
     }
 
     return keyDoc.key;

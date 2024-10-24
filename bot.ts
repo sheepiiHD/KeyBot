@@ -4,6 +4,7 @@ import loadCommands from "./utils/loadCommands";
 import loadInteractions from "./utils/loadInteractions";
 import loadEvents from "./utils/loadEvents";
 import config from "./config";
+import loadPrototypes from "./utils/loadPrototypes";
 
 const client: Client = new Client({
     intents: [
@@ -15,6 +16,8 @@ const client: Client = new Client({
     partials: [Partials.Channel],
 });
 
+loadPrototypes();
+
 loadCommands(client);
 
 loadEvents(client);
@@ -24,6 +27,5 @@ loadInteractions(client);
 // Connect to MongoDB
 mongoose.connect(config.MONGO_URI).then(() => console.log('Successfully loaded database'))
     .catch(err => console.error('MongoDB connection error:', err));
-
 
 client.login(config.BOT_TOKEN);

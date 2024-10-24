@@ -1,8 +1,9 @@
-import {Attachment, Client, Message} from 'discord.js';
+import {Attachment, Client, GuildMember, Message} from 'discord.js';
 import fetch from 'node-fetch';
 import { Key } from '../models/key';
 import config from "../config";
 import Logger from "../utils/Logger";
+import {assignKey} from "../utils/assignKey";
 
 export default (client: Client) => {
     client.on('messageCreate', async (message: Message) => {
@@ -35,6 +36,68 @@ export default (client: Client) => {
                 }
             } else {
                 await message.reply('Please upload a valid .txt file.');
+            }
+        } else {
+            const [command, type] = message.content.slice(1).split(' ');
+            const member = message.member as GuildMember;
+            if(!message.content.startsWith('!') || !command || !member){
+                return;
+            }
+
+            if(command && command !== 'claim'){
+                return
+            }
+
+            if(!type){
+                return;
+            }
+
+            const claim = config.claims.find(x => x.name === type);
+
+            if (!claim) {
+                await member.trySend(
+                    {content: 'There is no claim with this name, `' + type + '`.'}, message
+                );
+                return;
+            }
+
+            const hasRole = member && claim.discordRoleId.some(roleId => member.roles.cache.has(roleId));
+
+            if (!hasRole) {
+                await member.trySend({content: 'You don\'t have access to this claim, `' + type + '`.'}, message);
+            }
+
+            const amount = claim?.amount ?? 1;
+            const existingKeys = await Key.find({ assignedTo: member.id, type: type});
+            
+            if(existingKeys.length > 0){
+                const keysList = existingKeys.map(key => `\`${key.key}\``).join('\n');
+                await member.trySend({
+                    content: `You already have the following keys for ${type}:\n${keysList}`,
+                }, message);
+            }else{
+                // Claim multiple keys if amount is specified
+                if (amount > 1) {
+                    const claimResult = await Key.claimBulk(type, member.id, amount);
+
+                    if (claimResult.updatedCount > 0) {
+                        const keysList = claimResult.keys.map(key => `\`${key}\``).join('\n');
+                        await member.trySend({ content: `Your claim for ${type}:\n${keysList}`,}, message);
+                        await Logger.info(`<@${member.id}> claimed ${claimResult.updatedCount}x **${type}** keys.`);
+                    } else {
+                        await member.trySend({content: claimResult.message,}, message);
+                    }
+                } else {
+                    // Fallback to claiming a single key
+                    const key = await assignKey(member.id, type);
+
+                    if (key) {
+                        await member.trySend({content: `Your claim for ${type} is: \`${key}\``,}, message);
+                    } else {
+                        await member.trySend({ content: 'No available keys.',  }, message);
+                    }
+
+                }
             }
         }
     });
